@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class PathExample extends StatelessWidget {
-  const PathExample({Key? key}) : super(key: key);
+class PathExample_First extends StatelessWidget {
+  const PathExample_First({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,27 +35,31 @@ class PathPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
 
-class PathExample2 extends StatelessWidget {
-  const PathExample2({Key? key}) : super(key: key);
+class PathExample extends StatelessWidget {
+  const PathExample({Key? key}) : super(key: key);
 
   CustomPainter _drawLine(BuildContext context) {
     return LinePainter();
+  }
+
+  CustomPainter _drawCubic(BuildContext context) {
+    return CubicPainter();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: CustomPaint(
-        painter: _drawLine(context),
+        painter: _drawCubic(context),
       ),
     );
   }
 }
 
 class LinePainter extends CustomPainter {
-  final double progress;
+  final double progress; // How far to draw line accross width of screen.
 
-  LinePainter({this.progress = 0.0});
+  LinePainter({this.progress = 0.5});
 
   Paint _paint = Paint()
     ..color = Colors.black
@@ -74,5 +78,33 @@ class LinePainter extends CustomPainter {
   @override
   bool shouldRepaint(LinePainter oldDelegate) {
     return oldDelegate.progress != progress;
+  }
+}
+
+class CubicPainter extends CustomPainter {
+  CubicPainter();
+
+  Paint _paint = Paint()
+    ..color = Colors.green
+    ..strokeWidth = 4.0
+    ..style = PaintingStyle.stroke
+    ..strokeJoin = StrokeJoin.round;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 8.0;
+
+    Path path = Path();
+    path.cubicTo(size.width / 4, 3 * size.height / 4, 3 * size.width / 4,
+        size.height / 4, size.width, size.height);
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CubicPainter oldDelegate) {
+    return true;
   }
 }
