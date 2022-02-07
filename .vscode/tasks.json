@@ -1,0 +1,22 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    // Docs: https://code.visualstudio.com/docs/editor/tasks
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "set_edge_as_browser",
+            "command": "export CHROME_EXECUTABLE = /Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge", // Could be any other shell command
+            "args": [],
+            "type": "shell"
+        },
+        {
+            "label": "echotest",
+            "command": "echo", // Could be any other shell command
+            "args": [
+                "test"
+            ],
+            "type": "shell"
+        }
+    ]
+}

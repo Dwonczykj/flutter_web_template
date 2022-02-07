@@ -23,30 +23,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Planets();
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: Text(widget.title),
-    //   ),
-    //   body: Center(
-    //       // child: Column(
-    //       //   mainAxisAlignment: MainAxisAlignment.center,
-    //       //   children: const <Widget>[
-    //       //     ,
-    //       //   ],
-    //       // ),
-    //       child: Container(
-    //     height: 800,
-    //     width: 400,
-    //     color: Colors.grey,
-    //     margin: EdgeInsets.all(5.0),
-    //     child: PathExample(),
-    //   )),
-    //   floatingActionButton: FloatingActionButton(
-    //     onPressed: _incrementCounter,
-    //     tooltip: 'Increment',
-    //     child: const Icon(Icons.add),
-    //   ),
-    // );
+    return Consumers(numConsumers: 8);
+    // return SpiderLayout();
   }
 }

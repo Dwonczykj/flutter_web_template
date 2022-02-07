@@ -64,19 +64,6 @@ class _RetailerConsumerSpiderContainerState
     return points;
   }
 
-  Future<String> fetchUserOrder() =>
-      // Imagine that this function is
-      // more complex and slow.
-      Future.delayed(
-        const Duration(seconds: 2),
-        () => 'Large Latte',
-      );
-
-  Future<String> createOrderMessage() async {
-    var order = await fetchUserOrder();
-    return 'Your order is: $order';
-  }
-
   Future<List<Widget>> consumers(BuildContext context,
       {int numChildren = 1, double childRadius = 0.05}) async {
     double centerX = MediaQuery.of(context).size.width / 2.0;
@@ -131,91 +118,11 @@ class _RetailerConsumerSpiderContainerState
         right: 0,
         bottom: 0,
         child: Container(
-          // color: Colors.red,
           child: rawImage,
         ),
       );
-
-      // return '''<svg class="transaction-line"
-      //               width="100%" height="100%"
-      //               viewBox="0 0 100 100"
-      //               preserveAspectRatio="none meet"
-      //               style="position: absolute;
-      //               left:0%; top:0%;
-      //       ">''' +
-      //     '<path d=" M ' +
-      //     ((p.item1 + childRadius * 0.5) * 100.0).toString() +
-      //     ',' +
-      //     ((p.item2 + childRadius * 0.5) * 100.0).toString() +
-      //     ' l ' +
-      //     (50.0 - ((p.item1 + childRadius * 0.5) * 100.0)).toString() +
-      //     ',' +
-      //     (50.0 - ((p.item2 + childRadius * 0.5) * 100.0)).toString() +
-      //     '"' +
-      //     ' stroke="white" stroke-width="0.5" fill="none"/>' +
-      //     '''<circle r="1"
-      //           cx="''' +
-      //     ((p.item1 + childRadius * 0.5) * 100.0).toString() +
-      //     '''"
-      //           cy="''' +
-      //     ((p.item2 + childRadius * 0.5) * 100.0).toString() +
-      //     '''"
-      //           id="dot''' +
-      //     i.toString() +
-      //     '''"
-      //           style="fill: pink;">
-      //           <animateTransform attributeName="transform"
-      //               type="translate"
-      //               from="0 0"
-      //               to="''' +
-      //     (50.0 - ((p.item1 + childRadius * 0.5) * 100.0)).toString() +
-      //     ' ' +
-      //     (50.0 - ((p.item2 + childRadius * 0.5) * 100.0)).toString() +
-      //     '''"
-      //               begin="0s"
-      //               dur="5s"
-      //               repeatCount="indefinite">
-      //           </animateTransform>
-      //       </circle>
-      //       <image width="''' +
-      //     money_d.toString() +
-      //     '''" height="''' +
-      //     money_d.toString() +
-      //     '''"
-      //           xlink:href="assets/noun-money-1636594.svg">
-      //           <animateTransform
-      //                           attributeName="transform"
-      //                           type="translate"
-      //                           from="''' +
-      //     ((p.item1 + childRadius * 0.5) * 100.0 - rad).toString() +
-      //     ' ' +
-      //     ((p.item2 + childRadius * 0.5) * 100.0 - rad).toString() +
-      //     '''"
-      //                           to="''' +
-      //     (50 - rad).toString() +
-      //     ''' ''' +
-      //     (50 - rad).toString() +
-      //     '''"
-      //                           begin="0s"
-      //                           dur="5s"
-      //                           repeatCount="indefinite">
-      //   </animateTransform>
-      // </image>
-      //   </svg>''' +
-      //     '<div class="consumer" style="position: absolute; left: ' +
-      //     (p.item1 * 100.0).toString() +
-      //     '%; top: ' +
-      //     (p.item2 * 100.0).toString() +
-      //     '%">' +
-      //     (i + 1).toString() +
-      //     '</div>';
     });
     var x = Future.wait(divs.toList());
-    // var y = x.then((value) {
-    //   setState(() {
-    //     _consumers = value;
-    //   });
-    // });
     return x;
   }
 
