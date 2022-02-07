@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tuple/tuple.dart';
+import 'package:webtemplate/ui/components/animated_money_widget.dart';
 
 class Consumers extends StatefulWidget {
   const Consumers({Key? key, required this.numConsumers}) : super(key: key);
@@ -25,6 +26,8 @@ class _ConsumersState extends State<Consumers>
 
   int numConsumers = 1;
 
+  int _index = 0;
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +38,7 @@ class _ConsumersState extends State<Consumers>
     _controller.value = 1.0;
     numConsumers = widget.numConsumers;
     _points = getPointsPercentages(widget.numConsumers);
+    _index = 0;
   }
 
   @override
@@ -49,10 +53,7 @@ class _ConsumersState extends State<Consumers>
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             Expanded(
-              child: AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, snapshot) {
-                    return Center(
+              child: Center(
                       child: Stack(fit: StackFit.expand, children: <Widget>[
                         // CustomPaint(
                         //   painter: ConsumerPainter(
@@ -66,15 +67,15 @@ class _ConsumersState extends State<Consumers>
                         //         showPath, //TODO P2: Remove properties if not used
                         //   ),
                         // ),
-                        ...createConsumerSVGAtPosition(
-                                _controller.value, MediaQuery.of(context).size)
-                            .toList(),
-                        ...createMoneySVGAtPosition(
-                                _controller.value, MediaQuery.of(context).size)
-                            .toList(),
+                  ...createConsumerSVGAtPosition().toList(),
+                  // ...createMoneySVGAtPosition(_index).toList(),
+                  ..._points.map((point) => AnimatedMoneyWidget(
+                      index: _index,
+                      point: point,
+                      consumerRadiusPcnt: consumerRadiusPcnt,
+                      numConsumers: numConsumers))
                       ]),
-                    );
-                  }),
+              ),
             ),
             // Row(
             //   children: <Widget>[
@@ -138,8 +139,11 @@ class _ConsumersState extends State<Consumers>
               child: RaisedButton(
                 child: Text('Animate'),
                 onPressed: () {
-                  _controller.reset();
-                  _controller.forward();
+                  // _controller.reset();
+                  // _controller.forward();
+                  setState(() {
+                    _index++; //NOTE: Thie changes the value of the _alignment getter which tells the widget to animate itself.
+                  });
                 },
               ),
             ),
@@ -198,55 +202,54 @@ class _ConsumersState extends State<Consumers>
     return points;
   }
 
-  Iterable<Widget> createMoneySVGAtPosition(double moneyProgress, Size size) {
-    double Function(double) getCurPos = (double posPcnt) =>
-        (((posPcnt +
-                    (consumerRadiusPcnt *
-                        0.5)) // Add Half width of consumer icon to take us from 0.0 to centre of consumer as start for the cash animation.
-                *
-                2.0 -
-            1.0)) *
-        moneyProgress;
-    print(_points);
-    print(
-        _points.map((pr) => Tuple2(getCurPos(pr.item1), getCurPos(pr.item2))));
-    return _points.map((pr) => LayoutBuilder(builder: (context, constraints) {
-          var p = Tuple2(getCurPos(pr.item1), getCurPos(pr.item2));
-          return Positioned.fill(
-              child: Align(
-                  alignment: Alignment(p.item1, p.item2),
-                  child: SvgPicture.asset('images/noun-money-4563489.svg',
-                      height: consumerRadiusPcnt * constraints.maxHeight,
-                      width: consumerRadiusPcnt * constraints.maxWidth,
-                      color: Color.fromARGB(255, 14, 109, 61),
-                      semanticsLabel: 'A £ Note')));
-        }));
-
-    // return _points.map((p) => Positioned(
-    //       left: p.item1 <= 0.5 ? getCurPos(p.item1, size.width) : null,
-    //       top: p.item2 <= 0.5 ? getCurPos(p.item2, size.height) : null,
-    //       right: p.item1 > 0.5 ? getCurPos((1.0 - p.item1), size.width) : null,
-    //       bottom:
-    //           p.item2 > 0.5 ? getCurPos((1.0 - p.item2), size.height) : null,
-    //       child: SvgPicture.asset('images/noun-money-4563489.svg',
-    //           height: consumerRadiusPcnt * 0.1 * size.height,
-    //           width: consumerRadiusPcnt * 0.1 * size.width,
-    //           color: Colors.green[900],
-    //           semanticsLabel: 'A £ note'),
-    //     ));
-  }
-
-  Iterable<Widget> createConsumerSVGAtPosition(
-      double moneyProgress, Size pSize) {
+  Iterable<Widget> createMoneySVGAtPosition(int index) {
+    double Function(double) getStartPos = (double posPcnt) => (((posPcnt +
+                (consumerRadiusPcnt *
+                    0.5)) // Add Half width of consumer icon to take us from 0.0 to centre of consumer as start for the cash animation.
+            *
+            2.0 -
+        1.0));
     double Function(double) getCurPos = (double posPcnt) => (((posPcnt +
                 (consumerRadiusPcnt *
                     0.5)) // Add Half width of consumer icon to take us from 0.0 to centre of consumer as start for the cash animation.
             *
             2.0 -
         1.0));
-    // double Function(double, double) getStartPos =
-    //     (double posPcnt, double viewSizeMultiplier) =>
-    //         ((posPcnt + consumerRadiusPcnt * 0.5)) * viewSizeMultiplier;
+
+    
+
+    return _points.map((pr) => LayoutBuilder(builder: (context, constraints) {
+          var p1 = Tuple2(getStartPos(pr.item1), getCurPos(pr.item2));
+          var p2 = Tuple2(getCurPos(pr.item1), getCurPos(pr.item2));
+          var _alignments = [
+            Alignment(p1.item1, p1.item2),
+            Alignment(p2.item1, p2.item2)
+          ];
+          return AnimatedAlign(
+            alignment: _alignments[index %
+                _alignments
+                    .length], //if this changes, animation will occur on paint to update.
+            duration: Duration(seconds: 6),
+            curve: Curves.fastOutSlowIn,
+            child: SizedBox(
+                width: 40.0,
+                height: 40.0,
+                child: SvgPicture.asset('images/noun-money-4563489.svg',
+                    height: consumerRadiusPcnt * constraints.maxHeight,
+                    width: consumerRadiusPcnt * constraints.maxWidth,
+                    color: Color.fromARGB(255, 14, 109, 61),
+                    semanticsLabel: 'A £ Note')),
+          );
+        }));
+  }
+
+  Iterable<Widget> createConsumerSVGAtPosition() {
+    double Function(double) getCurPos = (double posPcnt) => (((posPcnt +
+                (consumerRadiusPcnt *
+                    0.5)) // Add Half width of consumer icon to take us from 0.0 to centre of consumer as start for the cash animation.
+            *
+            2.0 -
+        1.0));
     return _points.map((pr) => LayoutBuilder(builder: (context, constraints) {
           var p = Tuple2(getCurPos(pr.item1), getCurPos(pr.item2));
           return Positioned.fill(
@@ -257,30 +260,6 @@ class _ConsumersState extends State<Consumers>
                       width: consumerRadiusPcnt * constraints.maxWidth,
                       color: Color.fromARGB(255, 45, 46, 46),
                       semanticsLabel: 'A consumer')));
-          // return Positioned(
-          //   left: p.item1 <= 0.5
-          //       ? getStartPos(p.item1, constraints.maxWidth)
-          //       : null,
-          //   top: p.item2 <= 0.5
-          //       ? getStartPos(p.item2, constraints.maxHeight)
-          //       : null,
-          //   right: p.item1 > 0.5
-          //       ? getStartPos((1.0 - p.item1), constraints.maxWidth)
-          //       : null,
-          //   bottom: p.item2 > 0.5
-          //       ? getStartPos((1.0 - p.item2), constraints.maxHeight)
-          //       : null,
-          //   child: SvgPicture.asset('images/noun-person-4574021.svg',
-          //       height: consumerRadiusPcnt * constraints.maxHeight,
-          //       width: consumerRadiusPcnt * constraints.maxWidth,
-          //       color: Colors.green[900],
-          //       semanticsLabel: 'A consumer' +
-          //           ' (' +
-          //           p.item1.toString() +
-          //           ',' +
-          //           p.item2.toString() +
-          //           ')'),
-          //   );
         }));
   }
 }

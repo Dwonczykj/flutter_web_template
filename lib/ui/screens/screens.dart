@@ -7,3 +7,4 @@ export 'polygon.dart';
 // TODO P1: Remove the following poc import.
 export 'consumer.dart';
 export 'spider_layout.dart';
+export 'animated_align_demo.dart';
