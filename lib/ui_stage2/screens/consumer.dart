@@ -3,8 +3,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:webtemplate/ui/components/animated_money_widget.dart';
+import 'package:webtemplate/ui_stage2/network/mock_service.dart';
 
 import '../components/components.dart';
 
@@ -46,143 +48,144 @@ class _ConsumersState extends State<Consumers>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Green point flow'),
-      ),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            Expanded(
-              child: Center(
-                child: Stack(fit: StackFit.expand, children: <Widget>[
-                  // CustomPaint(
-                  //   painter: ConsumerPainter(
-                  //     consumerRadiusPcnt,
-                  //     _points,
-                  //     numConsumers: numConsumers.toDouble(),
-                  //     moneyProgress: _controller.value,
-                  //     showDots:
-                  //         showDots, //TODO P2: Remove properties if not used
-                  //     showPath:
-                  //         showPath, //TODO P2: Remove properties if not used
-                  //   ),
-                  // ),
-                  // ...createConsumerSVGAtPosition().toList(),
-                  ..._points
-                      .map((point) => ConsumerWidget(
-                          consumerRadiusPcnt: consumerRadiusPcnt,
-                          alignment: Alignment(point.item1, point.item2)))
-                      .toList(),
-                  ...(_index % 2 == 1
-                      ? _points
-                          .map((point) => MoneySendAnimationWidget(
-                              consumerRadiusPcnt: consumerRadiusPcnt,
-                              alignmentForAnimation: const Alignment(0.0, 0.0)))
-                          .toList()
-                      : _points
-                          .map((point) => MoneySendAnimationWidget(
-                              consumerRadiusPcnt: consumerRadiusPcnt,
-                              alignmentForAnimation:
-                                  Alignment(point.item1, point.item2)))
-                          .toList()),
-                  // ...createMoneySVGAtPosition().toList(),
-                  // ..._points.map((point) => AnimatedMoneyCotainer(
-                  //     index: _index,
-                  //     point: point,
-                  //     consumerRadiusPcnt: consumerRadiusPcnt,
-                  //     numConsumers: numConsumers))
-                  Center(
-                    child: Container(
-                        color: Color.fromARGB(255, 236, 98, 144),
-                        child: SizedBox(width: 40, height: 40)),
-                  ),
-                  Positioned.fill(
-                      child: Align(
-                          alignment: Alignment(0, 0),
-                          child: SvgPicture.asset(
-                              'images/noun-buildings-4201535.svg',
-                              height: 100.0,
-                              width: 100.0,
-                              color: Color.fromARGB(255, 45, 46, 46),
-                              semanticsLabel: 'Retailers')))
-                ]),
-              ),
-            ),
-            // Row(
-            //   children: <Widget>[
-            //     Padding(
-            //       padding: const EdgeInsets.only(left: 24.0, right: 0.0),
-            //       child: Text('Show Dots'),
-            //     ),
-            //     Switch(
-            //       value: showDots,
-            //       onChanged: (value) {
-            //         setState(() {
-            //           showDots = value;
-            //         });
-            //       },
-            //     ),
-            //     Padding(
-            //       padding: const EdgeInsets.only(left: 24.0, right: 0.0),
-            //       child: Text('Show Path'),
-            //     ),
-            //     Switch(
-            //       value: showPath,
-            //       onChanged: (value) {
-            //         setState(() {
-            //           showPath = value;
-            //         });
-            //       },
-            //     ),
-            //   ],
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.only(left: 24.0),
-            //   child: Text('Circles'),
-            // ),
-            // Slider(
-            //   value: numConsumers.toDouble(),
-            //   min: 1.0,
-            //   max: 10.0,
-            //   divisions: 9,
-            //   label: numConsumers.toInt().toString(),
-            //   onChanged: (value) {
-            //     setState(() {
-            //       numConsumers = value.toInt();
-            //     });
-            //   },
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.only(left: 24.0),
-            //   child: Text('Progress'),
-            // ),
-            // Slider(
-            //   value: _controller.value,
-            //   min: 0.0,
-            //   max: 1.0,
-            //   onChanged: (value) {
-            //     setState(() {
-            //       _controller.value = value;
-            //     });
-            //   },
-            // ),
-            Center(
-              child: RaisedButton(
-                child: Text('Animate'),
-                onPressed: () {
-                  // _controller.reset();
-                  // _controller.forward();
-                  setState(() {
-                    _index++; //NOTE: Thie changes the value of the _alignment getter which tells the widget to animate itself.
-                  });
-                },
-              ),
-            ),
-          ],
+        appBar: AppBar(
+          title: Text('Green point flow'),
         ),
-      ),
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Expanded(
+                child: Center(
+                  child: Stack(fit: StackFit.expand, children: <Widget>[
+                    // CustomPaint(
+                    //   painter: ConsumerPainter(
+                    //     consumerRadiusPcnt,
+                    //     _points,
+                    //     numConsumers: numConsumers.toDouble(),
+                    //     moneyProgress: _controller.value,
+                    //     showDots:
+                    //         showDots, //TODO P2: Remove properties if not used
+                    //     showPath:
+                    //         showPath, //TODO P2: Remove properties if not used
+                    //   ),
+                    // ),
+                    // ...createConsumerSVGAtPosition().toList(),
+                    ..._points
+                        .map((point) => ConsumerWidget(
+                            consumerRadiusPcnt: consumerRadiusPcnt,
+                            alignment: Alignment(point.item1, point.item2)))
+                        .toList(),
+                    ...(_index % 2 == 1
+                        ? _points
+                            .map((point) => MoneySendAnimationWidget(
+                                consumerRadiusPcnt: consumerRadiusPcnt,
+                                alignmentForAnimation:
+                                    const Alignment(0.0, 0.0)))
+                            .toList()
+                        : _points
+                            .map((point) => MoneySendAnimationWidget(
+                                consumerRadiusPcnt: consumerRadiusPcnt,
+                                alignmentForAnimation:
+                                    Alignment(point.item1, point.item2)))
+                            .toList()),
+                    // ...createMoneySVGAtPosition().toList(),
+                    // ..._points.map((point) => AnimatedMoneyCotainer(
+                    //     index: _index,
+                    //     point: point,
+                    //     consumerRadiusPcnt: consumerRadiusPcnt,
+                    //     numConsumers: numConsumers))
+                    Center(
+                      child: Container(
+                          color: Color.fromARGB(255, 236, 98, 144),
+                          child: SizedBox(width: 40, height: 40)),
+                    ),
+                    Positioned.fill(
+                        child: Align(
+                            alignment: Alignment(0, 0),
+                            child: SvgPicture.asset(
+                                'images/noun-buildings-4201535.svg',
+                                height: 100.0,
+                                width: 100.0,
+                                color: Color.fromARGB(255, 45, 46, 46),
+                                semanticsLabel: 'Retailers')))
+                  ]),
+                ),
+              ),
+              // Row(
+              //   children: <Widget>[
+              //     Padding(
+              //       padding: const EdgeInsets.only(left: 24.0, right: 0.0),
+              //       child: Text('Show Dots'),
+              //     ),
+              //     Switch(
+              //       value: showDots,
+              //       onChanged: (value) {
+              //         setState(() {
+              //           showDots = value;
+              //         });
+              //       },
+              //     ),
+              //     Padding(
+              //       padding: const EdgeInsets.only(left: 24.0, right: 0.0),
+              //       child: Text('Show Path'),
+              //     ),
+              //     Switch(
+              //       value: showPath,
+              //       onChanged: (value) {
+              //         setState(() {
+              //           showPath = value;
+              //         });
+              //       },
+              //     ),
+              //   ],
+              // ),
+              // Padding(
+              //   padding: const EdgeInsets.only(left: 24.0),
+              //   child: Text('Circles'),
+              // ),
+              // Slider(
+              //   value: numConsumers.toDouble(),
+              //   min: 1.0,
+              //   max: 10.0,
+              //   divisions: 9,
+              //   label: numConsumers.toInt().toString(),
+              //   onChanged: (value) {
+              //     setState(() {
+              //       numConsumers = value.toInt();
+              //     });
+              //   },
+              // ),
+              // Padding(
+              //   padding: const EdgeInsets.only(left: 24.0),
+              //   child: Text('Progress'),
+              // ),
+              // Slider(
+              //   value: _controller.value,
+              //   min: 0.0,
+              //   max: 1.0,
+              //   onChanged: (value) {
+              //     setState(() {
+              //       _controller.value = value;
+              //     });
+              //   },
+              // ),
+              Center(
+                child: RaisedButton(
+                  child: Text('Animate'),
+                  onPressed: () {
+                    // _controller.reset();
+                    // _controller.forward();
+                    setState(() {
+                      _index++; //NOTE: Thie changes the value of the _alignment getter which tells the widget to animate itself.
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
     );
   }
 
