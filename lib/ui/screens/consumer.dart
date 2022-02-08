@@ -91,6 +91,20 @@ class _ConsumersState extends State<Consumers>
                   //     point: point,
                   //     consumerRadiusPcnt: consumerRadiusPcnt,
                   //     numConsumers: numConsumers))
+                  Center(
+                    child: Container(
+                        color: Color.fromARGB(255, 236, 98, 144),
+                        child: SizedBox(width: 40, height: 40)),
+                  ),
+                  Positioned.fill(
+                      child: Align(
+                          alignment: Alignment(0, 0),
+                          child: SvgPicture.asset(
+                              'images/noun-buildings-4201535.svg',
+                              height: 100.0,
+                              width: 100.0,
+                              color: Color.fromARGB(255, 45, 46, 46),
+                              semanticsLabel: 'Retailers')))
                 ]),
               ),
             ),
@@ -219,7 +233,6 @@ class ConsumerWidget extends StatelessWidget with SpiderLayoutMixin {
   }
 }
 
-//TODO P1: Refactor this to all be contained in the consumer widget using a Stack in there
 class MoneySendAnimationWidget extends StatelessWidget with SpiderLayoutMixin {
   const MoneySendAnimationWidget(
       {Key? key,
@@ -248,7 +261,10 @@ class MoneySendAnimationWidget extends StatelessWidget with SpiderLayoutMixin {
       //   Alignment(p1.item1, p1.item2),
       //   Alignment(p2.item1, p2.item2)
       // ];
-      //TODO: 1. Have the widget using an animation on an infinite loop where we pass point2 in the constructor and animate between p1 and p2.
+      //DONE: 1. Have the widget using an animation on an infinite loop where we pass point2 in the constructor and animate between p1 and p2.
+      //TODO: Add Retailers to view.
+      //TODO: Don't move money widget in consumer as money is a separate object belonging to society (i.e. whole system that can then also be posessed by the retailer).
+      //TODO: Convert the AnimateAlign widget to have a controller so that i am able to reset the view without needing to animate the money back to the consumer./
       //TODO: 2. Have the widget animate once when it is first drawn, representing the money widget being added to the tree, moving to retailer and then hiding.
       //TODO: 3. Have consumer parent dynamically add MoneyAnimWidget children to stack upon processing a new transaction. Consumer should then remove widgets too.
       //NOTE: The reason that AnimateAlign works by creating an animation when the alignment prop changes is that in flutter, a widget updates when the props on the widget change, not by calling handleevent functions ideally.
