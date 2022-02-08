@@ -24,7 +24,7 @@ class _ConsumersState extends State<Consumers>
 
   bool showDots = false, showPath = true;
 
-  double consumerRadiusPcnt = 0.15;
+  double consumerRadiusPcnt = 0.05;
 
   int numConsumers = 1;
 
@@ -95,11 +95,8 @@ class _ConsumersState extends State<Consumers>
                   //     numConsumers: numConsumers))
                   Center(
                     child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                          color: Color.fromARGB(255, 236, 98, 144),
-                        ),
-                        child: SizedBox(width: 100, height: 100)),
+                        color: Color.fromARGB(255, 236, 98, 144),
+                        child: SizedBox(width: 40, height: 40)),
                   ),
                   Positioned.fill(
                       child: Align(
@@ -211,7 +208,7 @@ class _ConsumersState extends State<Consumers>
 //   final AlignmentGeometry alignment;
 // }
 
-class ConsumerWidget extends StatefulWidget with SpiderLayoutMixin {
+class ConsumerWidget extends StatelessWidget with SpiderLayoutMixin {
   ConsumerWidget(
       {Key? key,
       // required this.point,
@@ -219,51 +216,38 @@ class ConsumerWidget extends StatefulWidget with SpiderLayoutMixin {
       required this.alignment})
       : super(key: key);
 
+  final GlobalKey _key = GlobalKey();
+
   final double consumerRadiusPcnt;
   // final Tuple2<double, double> point;
   final AlignmentGeometry alignment;
-
-  @override
-  State<ConsumerWidget> createState() => _ConsumerWidgetState();
-}
-
-class _ConsumerWidgetState extends State<ConsumerWidget> {
-  GlobalKey key = new GlobalKey(debugLabel: 'Consumer Widget');
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       return Positioned.fill(
           child: Align(
-              alignment: widget.alignment,
-              child: Builder(builder: (context) {
-                return InkWell(
-                  key: Key("show_more_ink_well"),
-                  child: SvgPicture.asset('images/noun-person-4574021.svg',
-                      key: key,
-                      height: widget.consumerRadiusPcnt * constraints.maxHeight,
-                      width: widget.consumerRadiusPcnt * constraints.maxWidth,
-                      color: Color.fromARGB(255, 45, 46, 46),
-                      semanticsLabel: 'A consumer'),
-                  onTap: () {
-                    showConsumerDetails(consumer: 'Consumer Info placeholder');
-                  },
-                  onHover: (isOver) {
-                    if (isOver) {
-                      showConsumerDetails(consumer: 'Consumer Info Hover');
-                    }
-                  },
-                );
-              })));
+              alignment: alignment,
+              child: InkWell(
+                child: SvgPicture.asset('images/noun-person-4574021.svg',
+                    height: consumerRadiusPcnt * constraints.maxHeight,
+                    width: consumerRadiusPcnt * constraints.maxWidth,
+                    color: Color.fromARGB(255, 45, 46, 46),
+                    semanticsLabel: 'A consumer'),
+                onTap: () {
+                  showConsumerDetails(context,
+                      consumer: 'Consumer Info placeholder');
+                },
+              )));
     });
   }
 
-  void showConsumerDetails({required String consumer}) {
+  void showConsumerDetails(BuildContext context, {required String consumer}) {
     ShowMoreTextPopup popup = ShowMoreTextPopup(context,
         text: consumer,
         textStyle: TextStyle(color: Colors.black),
         height: 100,
-        width: 300,
+        width: 100,
         backgroundColor: Color.fromARGB(179, 74, 90, 90),
         padding: EdgeInsets.all(4.0),
         borderRadius: BorderRadius.circular(10.0), onDismiss: () {
@@ -273,90 +257,10 @@ class _ConsumerWidgetState extends State<ConsumerWidget> {
 
     /// show the popup for specific widget
     popup.show(
-      widgetKey: key,
+      widgetKey: _key,
     );
   }
 }
-
-// class DescriptionTextWidget extends StatefulWidget {
-//   final String text;
-
-//   DescriptionTextWidget({required this.text});
-
-//   @override
-//   _DescriptionTextWidgetState createState() =>
-//       new _DescriptionTextWidgetState();
-// }
-
-// class _DescriptionTextWidgetState extends State<DescriptionTextWidget> {
-//   String firstHalf = '';
-//   String secondHalf = '';
-//   GlobalKey key = new GlobalKey();
-//   bool flag = true;
-
-//   @override
-//   void initState() {
-//     super.initState();
-
-//     if (widget.text.length > 40) {
-//       firstHalf = widget.text.substring(0, 40);
-//       secondHalf = widget.text.substring(40, widget.text.length);
-//     } else {
-//       firstHalf = widget.text;
-//       secondHalf = "";
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return new Container(
-//       padding: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-//       child: secondHalf.isEmpty
-//           ? new Text(firstHalf)
-//           : new Row(
-//               children: <Widget>[
-//                 new Text(firstHalf + " "),
-//                 new InkWell(
-//                   key: Key("show_more_ink_well"),
-//                   child: new Row(
-//                     mainAxisSize: MainAxisSize.min,
-//                     mainAxisAlignment: MainAxisAlignment.end,
-//                     children: <Widget>[
-//                       new Text(
-//                         "show more",
-//                         key: key,
-//                         style: new TextStyle(color: Colors.blue),
-//                       ),
-//                     ],
-//                   ),
-//                   onTap: () {
-//                     showMoreText(widget.text);
-//                   },
-//                 ),
-//               ],
-//             ),
-//     );
-//   }
-
-//   void showMoreText(String text) {
-//     ShowMoreTextPopup popup = ShowMoreTextPopup(context,
-//         text: text,
-//         textStyle: TextStyle(color: Colors.black),
-//         height: 200,
-//         width: 100,
-//         backgroundColor: Color(0xFF16CCCC),
-//         padding: EdgeInsets.all(4.0),
-//         borderRadius: BorderRadius.circular(10.0), onDismiss: () {
-//       ScaffoldMessenger.of(context)
-//           .showSnackBar(SnackBar(content: Text("Dismiss callback!")));
-//     });
-
-//     /// show the popup for specific widget
-//     popup.show(
-//       widgetKey: key,
-//     );
-//   }
-// }
 
 class MoneySendAnimationWidget extends StatelessWidget with SpiderLayoutMixin {
   const MoneySendAnimationWidget(

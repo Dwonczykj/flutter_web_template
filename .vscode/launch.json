@@ -5,6 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Dart_Alterative",
+            "type": "dart",
+            "request": "launch",
+            "program": "bin/main2.dart"
+        },
+        {
             "name": "webtemplate",
             "request": "launch",
             "preLaunchTask": "set_edge_as_browser",
