@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:webtemplate/ui/screens/screens.dart';
+import 'package:webtemplate/ui_stage2/network/service_interface.dart';
 import '../components/path_example.dart';
 import '../network/mock_service.dart';
 // import 'package:webtemplate/ui/components/retailer_consumer_spider.dart';
@@ -25,7 +26,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MockService>(builder: (context, service, child) {
+    return Consumer<ServiceInterface>(builder: (context, service, child) {
       return FutureBuilder(
           future: service.queryService('Dummy'),
           initialData: <ConsumerObj>[],
