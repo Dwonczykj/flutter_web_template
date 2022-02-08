@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:webtemplate/ui/screens/screens.dart';
 import '../components/path_example.dart';
+import '../network/mock_service.dart';
 // import 'package:webtemplate/ui/components/retailer_consumer_spider.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -23,7 +25,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumers(numConsumers: 8);
+    return Consumer<MockService>(builder: (context, service, child) {
+      return FutureBuilder(
+          future: service.queryService('Dummy'),
+          initialData: <ConsumerObj>[],
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Consumers(numConsumers: (snapshot.data as List).length);
+            } else {
+              return Consumers(numConsumers: 8);
+            }
+          });
+    });
     // return AnimatedAlignDemo();
   }
 }
