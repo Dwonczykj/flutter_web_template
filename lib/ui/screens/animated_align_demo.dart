@@ -39,18 +39,7 @@ class _AnimatedAlignDemoState extends State<AnimatedAlignDemo> {
         child: Stack(
           alignment: Alignment.bottomCenter,
           children: <Widget>[
-            AnimatedAlign(
-              alignment: _alignment,
-              duration: Duration(seconds: 6),
-              curve: Curves.easeInOutBack,
-              child: SizedBox(
-                  width: 100.0,
-                  height: 100.0,
-                  child: Image.asset(
-                    'images/pluginIcon.png',
-                    height: 40,
-                  )),
-            ),
+            AnimatedAlignDemoAligner(alignment: _alignment),
             ButtonTheme(
               minWidth: 100,
               height: 50,
@@ -61,7 +50,7 @@ class _AnimatedAlignDemoState extends State<AnimatedAlignDemo> {
                 color: Colors.purple.withOpacity(0.6),
                 onPressed: () {
                   setState(() {
-                    _index++;
+                    _index++; //NOTE: Thie changes the value of the _alignment getter which tells the widget to animate itself.
                   });
                 },
                 child: Text(
@@ -78,6 +67,32 @@ class _AnimatedAlignDemoState extends State<AnimatedAlignDemo> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class AnimatedAlignDemoAligner extends StatelessWidget {
+  const AnimatedAlignDemoAligner({
+    Key? key,
+    required AlignmentGeometry alignment,
+  })  : _alignment = alignment,
+        super(key: key);
+
+  final AlignmentGeometry _alignment;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedAlign(
+      alignment: _alignment,
+      duration: Duration(seconds: 6),
+      curve: Curves.easeInOutBack,
+      child: SizedBox(
+          width: 100.0,
+          height: 100.0,
+          child: Image.asset(
+            'images/pluginIcon.png',
+            height: 40,
+          )),
     );
   }
 }

@@ -16,7 +16,7 @@ class Consumers extends StatefulWidget {
 }
 
 class _ConsumersState extends State<Consumers>
-    with SingleTickerProviderStateMixin {
+    with SpiderLayoutMixin, SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late List<Tuple2<double, double>> _points;
 
@@ -37,7 +37,7 @@ class _ConsumersState extends State<Consumers>
     );
     _controller.value = 1.0;
     numConsumers = widget.numConsumers;
-    _points = getPointsPercentages(widget.numConsumers);
+    _points = getPointsPercentages(numConsumers, consumerRadiusPcnt);
     _index = 0;
   }
 
@@ -54,27 +54,44 @@ class _ConsumersState extends State<Consumers>
           children: <Widget>[
             Expanded(
               child: Center(
-                      child: Stack(fit: StackFit.expand, children: <Widget>[
-                        // CustomPaint(
-                        //   painter: ConsumerPainter(
-                        //     consumerRadiusPcnt,
-                        //     _points,
-                        //     numConsumers: numConsumers.toDouble(),
-                        //     moneyProgress: _controller.value,
-                        //     showDots:
-                        //         showDots, //TODO P2: Remove properties if not used
-                        //     showPath:
-                        //         showPath, //TODO P2: Remove properties if not used
-                        //   ),
-                        // ),
-                  ...createConsumerSVGAtPosition().toList(),
-                  // ...createMoneySVGAtPosition(_index).toList(),
-                  ..._points.map((point) => AnimatedMoneyWidget(
-                      index: _index,
-                      point: point,
-                      consumerRadiusPcnt: consumerRadiusPcnt,
-                      numConsumers: numConsumers))
-                      ]),
+                child: Stack(fit: StackFit.expand, children: <Widget>[
+                  // CustomPaint(
+                  //   painter: ConsumerPainter(
+                  //     consumerRadiusPcnt,
+                  //     _points,
+                  //     numConsumers: numConsumers.toDouble(),
+                  //     moneyProgress: _controller.value,
+                  //     showDots:
+                  //         showDots, //TODO P2: Remove properties if not used
+                  //     showPath:
+                  //         showPath, //TODO P2: Remove properties if not used
+                  //   ),
+                  // ),
+                  // ...createConsumerSVGAtPosition().toList(),
+                  ..._points
+                      .map((point) => ConsumerWidget(
+                          consumerRadiusPcnt: consumerRadiusPcnt,
+                          alignment: Alignment(point.item1, point.item2)))
+                      .toList(),
+                  ...(_index % 2 == 1
+                      ? _points
+                          .map((point) => MoneySendAnimationWidget(
+                              consumerRadiusPcnt: consumerRadiusPcnt,
+                              alignmentForAnimation: const Alignment(0.0, 0.0)))
+                          .toList()
+                      : _points
+                          .map((point) => MoneySendAnimationWidget(
+                              consumerRadiusPcnt: consumerRadiusPcnt,
+                              alignmentForAnimation:
+                                  Alignment(point.item1, point.item2)))
+                          .toList()),
+                  // ...createMoneySVGAtPosition().toList(),
+                  // ..._points.map((point) => AnimatedMoneyCotainer(
+                  //     index: _index,
+                  //     point: point,
+                  //     consumerRadiusPcnt: consumerRadiusPcnt,
+                  //     numConsumers: numConsumers))
+                ]),
               ),
             ),
             // Row(
@@ -153,7 +170,131 @@ class _ConsumersState extends State<Consumers>
     );
   }
 
-  List<Tuple2<double, double>> getPointsPercentages(int numberOfPoints) {
+  Iterable<Widget> createMoneySVGAtPosition({int durationSecs = 5}) {
+    return _points.map((point) => MoneySendAnimationWidget(
+        consumerRadiusPcnt: consumerRadiusPcnt,
+        alignmentForAnimation: Alignment(point.item1, point.item2)));
+  }
+
+  Iterable<Widget> createConsumerSVGAtPosition() {
+    return _points.map((point) => ConsumerWidget(
+        consumerRadiusPcnt: consumerRadiusPcnt,
+        alignment: Alignment(point.item1, point.item2)));
+  }
+}
+
+// class SpiderPoint {
+//   SpiderPoint();
+
+//   final double startX;
+//   final double startY;
+
+//   final AlignmentGeometry alignment;
+// }
+
+class ConsumerWidget extends StatelessWidget with SpiderLayoutMixin {
+  const ConsumerWidget(
+      {Key? key,
+      // required this.point,
+      required this.consumerRadiusPcnt,
+      required this.alignment})
+      : super(key: key);
+
+  final double consumerRadiusPcnt;
+  // final Tuple2<double, double> point;
+  final AlignmentGeometry alignment;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      return Positioned.fill(
+          child: Align(
+              alignment: alignment,
+              child: SvgPicture.asset('images/noun-person-4574021.svg',
+                  height: consumerRadiusPcnt * constraints.maxHeight,
+                  width: consumerRadiusPcnt * constraints.maxWidth,
+                  color: Color.fromARGB(255, 45, 46, 46),
+                  semanticsLabel: 'A consumer')));
+    });
+  }
+}
+
+//TODO P1: Refactor this to all be contained in the consumer widget using a Stack in there
+class MoneySendAnimationWidget extends StatelessWidget with SpiderLayoutMixin {
+  const MoneySendAnimationWidget(
+      {Key? key,
+      // required this.point1,
+      // required this.point2,
+      required this.consumerRadiusPcnt,
+      required this.alignmentForAnimation,
+      this.durationSecs = 5})
+      : super(key: key);
+
+  final double consumerRadiusPcnt;
+  // final Tuple2<double, double> point1;
+  // final Tuple2<double, double> point2;
+  final AlignmentGeometry alignmentForAnimation;
+  final int durationSecs;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      // var p1 = point1; // Tuple2(_getStartPos(point.item1, consumerRadiusPcnt), _getStartPos(point.item2, consumerRadiusPcnt));
+
+      // //BUG: This is currently the same point, when alignment is changed the function should be passed the new point for the money to travel to:
+      // var p2 = point2; // Tuple2(_getCurPos(point.item1, consumerRadiusPcnt), _getCurPos(point.item2, consumerRadiusPcnt));
+
+      // var _alignments = [
+      //   Alignment(p1.item1, p1.item2),
+      //   Alignment(p2.item1, p2.item2)
+      // ];
+      //TODO: 1. Have the widget using an animation on an infinite loop where we pass point2 in the constructor and animate between p1 and p2.
+      //TODO: 2. Have the widget animate once when it is first drawn, representing the money widget being added to the tree, moving to retailer and then hiding.
+      //TODO: 3. Have consumer parent dynamically add MoneyAnimWidget children to stack upon processing a new transaction. Consumer should then remove widgets too.
+      //NOTE: The reason that AnimateAlign works by creating an animation when the alignment prop changes is that in flutter, a widget updates when the props on the widget change, not by calling handleevent functions ideally.
+      return AnimatedAlign(
+        alignment:
+            alignmentForAnimation, //if this changes, animation will occur on paint to update.
+        duration: Duration(seconds: durationSecs),
+        curve: Curves.fastOutSlowIn,
+        child: SizedBox(
+            width: 40.0,
+            height: 40.0,
+            child: SvgPicture.asset('images/noun-money-4563489.svg',
+                height: consumerRadiusPcnt * constraints.maxHeight,
+                width: consumerRadiusPcnt * constraints.maxWidth,
+                color: Color.fromARGB(255, 14, 109, 61),
+                semanticsLabel: 'A £ Note')),
+      );
+    });
+  }
+}
+
+abstract class SpiderLayoutMixin {
+  // This class is intended to be used as a mixin, and should not be
+  // extended directly.
+  // factory SpiderLayoutMixin._() => null;
+
+  double _getStartPos(double posPcnt, double consumerRadiusPcnt) {
+    return (((posPcnt +
+                (consumerRadiusPcnt *
+                    0.5)) // Add Half width of consumer icon to take us from 0.0 to centre of consumer as start for the cash animation.
+            *
+            2.0 -
+        1.0));
+  }
+
+  double _getCurPos(double posPcnt, double consumerRadiusPcnt) {
+    return (((posPcnt +
+                (consumerRadiusPcnt *
+                    0.5)) // Add Half width of consumer icon to take us from 0.0 to centre of consumer as start for the cash animation.
+            *
+            2.0 -
+        1.0));
+  }
+
+  List<Tuple2<double, double>> getPointsPercentages(
+      int numberOfPoints, double consumerRadiusPcnt) {
     List<Tuple2<double, double>> points = [];
     var range = List<int>.generate(numberOfPoints, (i) => i);
     for (int i in range) {
@@ -196,71 +337,11 @@ class _ConsumersState extends State<Consumers>
             (1.0 * (1.0 - marginInPcnt)) - (X * 0.5));
       }
       if (point != null) {
-        points.add(point);
+        points.add(Tuple2(_getStartPos(point.item1, consumerRadiusPcnt),
+            _getStartPos(point.item2, consumerRadiusPcnt)));
       }
     }
     return points;
-  }
-
-  Iterable<Widget> createMoneySVGAtPosition(int index) {
-    double Function(double) getStartPos = (double posPcnt) => (((posPcnt +
-                (consumerRadiusPcnt *
-                    0.5)) // Add Half width of consumer icon to take us from 0.0 to centre of consumer as start for the cash animation.
-            *
-            2.0 -
-        1.0));
-    double Function(double) getCurPos = (double posPcnt) => (((posPcnt +
-                (consumerRadiusPcnt *
-                    0.5)) // Add Half width of consumer icon to take us from 0.0 to centre of consumer as start for the cash animation.
-            *
-            2.0 -
-        1.0));
-
-    
-
-    return _points.map((pr) => LayoutBuilder(builder: (context, constraints) {
-          var p1 = Tuple2(getStartPos(pr.item1), getCurPos(pr.item2));
-          var p2 = Tuple2(getCurPos(pr.item1), getCurPos(pr.item2));
-          var _alignments = [
-            Alignment(p1.item1, p1.item2),
-            Alignment(p2.item1, p2.item2)
-          ];
-          return AnimatedAlign(
-            alignment: _alignments[index %
-                _alignments
-                    .length], //if this changes, animation will occur on paint to update.
-            duration: Duration(seconds: 6),
-            curve: Curves.fastOutSlowIn,
-            child: SizedBox(
-                width: 40.0,
-                height: 40.0,
-                child: SvgPicture.asset('images/noun-money-4563489.svg',
-                    height: consumerRadiusPcnt * constraints.maxHeight,
-                    width: consumerRadiusPcnt * constraints.maxWidth,
-                    color: Color.fromARGB(255, 14, 109, 61),
-                    semanticsLabel: 'A £ Note')),
-          );
-        }));
-  }
-
-  Iterable<Widget> createConsumerSVGAtPosition() {
-    double Function(double) getCurPos = (double posPcnt) => (((posPcnt +
-                (consumerRadiusPcnt *
-                    0.5)) // Add Half width of consumer icon to take us from 0.0 to centre of consumer as start for the cash animation.
-            *
-            2.0 -
-        1.0));
-    return _points.map((pr) => LayoutBuilder(builder: (context, constraints) {
-          var p = Tuple2(getCurPos(pr.item1), getCurPos(pr.item2));
-          return Positioned.fill(
-              child: Align(
-                  alignment: Alignment(p.item1, p.item2),
-                  child: SvgPicture.asset('images/noun-person-4574021.svg',
-                      height: consumerRadiusPcnt * constraints.maxHeight,
-                      width: consumerRadiusPcnt * constraints.maxWidth,
-                      color: Color.fromARGB(255, 45, 46, 46),
-                      semanticsLabel: 'A consumer')));
-        }));
   }
 }
 
